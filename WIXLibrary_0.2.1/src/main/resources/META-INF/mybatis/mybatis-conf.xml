@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- TODO : 設定 -->
+	<!--
+	<settings>
+		<setting name="jdbcTypeForNull" value="NULL" />
+	</settings>
+	-->
+	
+	<!-- javaタイプに対する短縮名 -->
+	<typeAliases>
+		<typeAlias type="data.Entry" alias="entry" />
+		<typeAlias type="data.MetaInfo" alias="metaInfo" />
+		<typeAlias type="data.Version" alias="version" />
+	</typeAliases>
+	
+</configuration>

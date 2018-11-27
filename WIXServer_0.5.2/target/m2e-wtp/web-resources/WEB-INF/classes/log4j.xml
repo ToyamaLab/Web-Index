@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration
+	SYSTEM "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" >
+
+<!-- リダイレクタ用appender設定 -->
+<appender name="A1" class="org.apache.log4j.DailyRollingFileAppender">
+    <param name="File" value="/srv/tomcat/webapps/shinzato_WIXServer_0.5.3/WEB-INF/logs/redirect.log" />
+	<param name="Append" value="true" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %-5p [%c] - %m%n" />
+	</layout>
+</appender>
+
+<!-- wixplus用appender設定 -->
+<appender name="A2" class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File" value="/srv/tomcat/webapps/shinzato_WIXServer_0.5.3/WEB-INF/logs/wixplus.log" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<param name="Append" value="true" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %-5p [%c] - %m%n" />
+	</layout>
+</appender>
+
+<!-- coreのログappender設定 -->
+<appender name="core" class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File" value="/srv/tomcat/webapps/shinzato_WIXServer_0.5.3/WEB-INF/logs/wix.core.log" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<param name="Append" value="true" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %m%n" />
+	</layout>
+</appender>
+
+<!-- cacheのログappender設定 -->
+<appender name="cache" class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File" value="/srv/tomcat/webapps/shinzato_WIXServer_0.5.3/WEB-INF/logs/wix.cache.log" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<param name="Append" value="true" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %m%n" />
+	</layout>
+</appender>
+
+<!-- wixplusのログappender設定 -->
+<appender name="wixplus" class="org.apache.log4j.DailyRollingFileAppender">
+	<param name="File" value="/srv/tomcat/webapps/shinzato_WIXServer_0.5.3/WEB-INF/logs/wix.wixplus.log" />
+	<param name="DatePattern" value="'.'yyyy-MM-dd" />
+	<param name="Append" value="true" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %m%n" />
+	</layout>
+</appender>
+
+<!-- 標準出力用appender設定 -->
+<appender name="stdout" class="org.apache.log4j.ConsoleAppender">
+	<param name="Target" value="System.out" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %5p [%c] - %m (%L)%n" />
+	</layout>
+</appender>
+
+<!-- 標準エラー出力用appender設定 -->
+<appender name="stderr" class="org.apache.log4j.ConsoleAppender">
+	<param name="Target" value="System.err" />
+	<layout class="org.apache.log4j.PatternLayout">
+		<param name="ConversionPattern" value="%d %-5p [%c] - %m (%L)%n" />
+	</layout>
+
+	<!-- ERROR, WARNのfilter-->
+	<filter class="org.apache.log4j.varia.LevelMatchFilter">
+		<param name="LevelToMatch" value="ERROR" />
+		<param name="AcceptOnMatch" value="true" />
+	</filter>
+	<filter class="org.apache.log4j.varia.LevelMatchFilter">
+		<param name="LevelToMatch" value="FATAL" />
+		<param name="AcceptOnMatch" value="true" />
+	</filter>
+	<filter class="org.apache.log4j.varia.DenyAllFilter" />
+</appender>
+
+<!-- 非同期設定 -->
+<appender name="ASYNCA1" class="org.apache.log4j.AsyncAppender">
+	<appender-ref ref="A1" />
+</appender>
+
+<appender name="ASYNCA2" class="org.apache.log4j.AsyncAppender">
+	<appender-ref ref="A2" />
+</appender>
+
+<!-- 特定のログ出力設定 -->
+<category name="cache.controller.Redirector" additivity="true">
+	<priority value="debug" />
+	<appender-ref ref="ASYNCA1" />
+</category>
+
+<category name="wixplus.controller.WixPlusRedirector" additivity="true">
+	<priority value="debug" />
+	<appender-ref ref="ASYNCA2" />
+</category>
+
+<category name="core.controller" additivity="false">
+	<priority value="debug" />
+	<appender-ref ref="core" />
+</category>
+<category name="core.service" additivity="false">
+	<priority value="debug" />
+	<appender-ref ref="core" />
+</category>
+<category name="core.dao" additivity="false">
+	<priority value="debug" />
+	<appender-ref ref="core" />
+</category>
+<category name="core.util" additivity="false">
+    <priority value="debug" />
+    <appender-ref ref="core" />
+</category>
+<category name="cache.controller" additivity="false">
+	<priority value="debug" />
+	<appender-ref ref="cache" />
+</category>
+<category name="cache.service" additivity="false">
+	<priority value="debug" />
+	<appender-ref ref="cache" />
+</category>
+<category name="wixplus.controller" additivity="false">
+    <priority value="debug" />
+    <appender-ref ref="wixplus" />
+</category>
+<category name="wixplus.service" additivity="false">
+    <priority value="debug" />
+    <appender-ref ref="wixplus" />
+</category>
+
+<!-- 全体ではエラー出力のみログ出力 -->
+<!--<root>
+	<priority value="error" />
+	<appender-ref ref="core" />
+</root>
+-->
+</log4j:configuration>
+

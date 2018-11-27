@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WIX SYSTEM "/Users/kosuda/Documents/workspace/WIXLirary-part/src/main/resources/wixfile.dtd">
+<WIX>
+	<header>
+		<comment>test desu</comment>
+		<description>test desu</description>
+		<language>ja</language>
+	</header>
+	<body>
+		<entry>
+			<keyword>test3</keyword>
+			<target>update test</target>
+		</entry>
+		<entry>
+			<keyword>test4</keyword>
+			<target>update test</target>
+		</entry>
+		<entry>
+			<keyword>test4</keyword>
+			<target>update test</target>
+		</entry>
+	</body>
+</WIX>

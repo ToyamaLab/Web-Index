@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WIX SYSTEM "/Users/kosuda/Documents/workspace/WIXFileCompiler_0.0.1-SNAPSHOT/src/main/resources/wixfile.dtd">
+<WIX>
+	<header>
+		<comment>test desu</comment>
+		<description>test desu</description>
+		<language>ja</language>
+	</header>
+	<body>
+		<entry>
+			<keyword>test5</keyword>
+			<target>update test</target>
+		</entry>
+		<entry>
+			<keyword>test6</keyword>
+			<target>update test</target>
+		</entry>
+	</body>
+</WIX>

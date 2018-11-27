@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE WIX SYSTEM "/Users/kosuda/Documents/workspace/WIXLirary-part/src/main/resources/wixfile.dtd">
+<WIX>
+	<header>
+		<comment>test desu</comment>
+		<description>test desu</description>
+		<language>ja</language>
+	</header>
+    <body>
+        <part name="parttest1">
+			<part name="parttest2">
+		    	<entry>
+			    	<keyword>parttest2</keyword>
+			    	<target>update test</target>
+		    	</entry>
+				<part name="parttest3">
+		    		<entry>
+			    		<keyword>parttest3</keyword>
+			    		<target>update test</target>
+		    		</entry>
+					<entry>
+			    		<keyword>__parttest3</keyword>
+			    		<target>update test</target>
+		    		</entry>
+					<entry>
+			    		<keyword>_parttest3</keyword>
+			    		<target>update test</target>
+		    		</entry>
+        		</part>
+        	</part>
+			<part name="parttest4">
+		    	<entry>
+			    	<keyword>parttest4</keyword>
+			    	<target>update test</target>
+		    	</entry>
+				<part name="parttest5">
+		    		<entry>
+			    		<keyword>parttest5</keyword>
+			    		<target>update test</target>
+		    		</entry>
+        		</part>
+        	</part>
+		    <entry>
+			    <keyword>parttest1</keyword>
+			    <target>update test</target>
+		    </entry>
+        </part>
+		<part name="parttest6">
+		    <entry>
+			   	<keyword>parttest6</keyword>
+			   	<target>update test</target>
+		    </entry>
+			<part name="parttest7">
+		    	<entry>
+			   		<keyword>parttest7</keyword>
+			   		<target>update test</target>
+		    	</entry>
+        	</part>
+        </part>
+	</body>
+</WIX>

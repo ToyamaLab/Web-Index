@@ -1,0 +1,143 @@
+#!/bin/sh
+
+##########################
+#                        #
+# findindex shell script #
+# create by kosuda, 2013 #
+#                        #
+##########################
+
+####################
+# Gloval variables #
+####################
+RMIREGISTRY_PORT=1184
+
+CLASSPATH='.:../lib/*'
+
+FINDINDEX_OPTS='-Xmx16G -Xms16G -Djava.security.policy=policy -Dlog4j.configuration=log4j-findindex.xml'
+
+PID="findindex.pid"
+
+MAINT_CLASS="findindex.FindIndex"
+
+usage() {
+	cat <<_EOT_
+usage: $0 action
+
+action:
+	start			start findindex
+
+	stop			stop findindex
+
+	restart			restart findindex
+
+	rmiregistry		rmiregistry {start:stop:restart}
+_EOT_
+}
+
+make_policy() {
+	cat <<_EOT_ >policy
+grant {
+	permission java.security.AllPermission;
+};
+_EOT_
+}
+
+check_rmiregistry() {
+	pid=`pgrep -f "rmiregistry $RMIREGISTRY_PORT"`
+	kill -s 0 $pid >/dev/null 2>&1
+	return $?
+}
+
+start_rmiregistry() {
+	rmiregistry $RMIREGISTRY_PORT &
+}
+
+stop_rmiregistry() {
+	pid=`pgrep -f "rmiregistry $RMIREGISTRY_PORT"`
+	kill $pid
+
+	sleep 1
+	laspe_sec=0
+	while check_rmiregistry; do
+		sleep 1
+		laspe_sec=`expr $laspe_sec + 1`
+		echo "stop_rmiregistry: stop failed, killing with SIGKILL ($laspe_sec)"
+		pid=`pgrep -f "rmiregistry $RMIREGISTRY_PORT"`
+		kill -KILL $pid
+	done
+}
+
+check_findindex() {
+	pid=`head -n 1 ${PID}`
+	kill -s 0 $pid >/dev/null 2>&1
+	return $?
+}
+
+start_findindex() {
+	if [ ! -e policy ]; then
+		make_policy
+	fi
+
+	check_rmiregistry || start_rmiregistry
+
+	java -cp ${CLASSPATH} ${FINDINDEX_OPTS} ${MAINT_CLASS} &
+	echo $! >${PID}
+}
+
+stop_findindex() {
+	if [ check_findindex ]; then
+		pid=`head -n 1 ${PID}`
+		kill $pid
+	fi
+
+	sleep 1
+
+	lasepe_sec=0
+	while check_findindex; do
+		sleep 1
+		laspe_sec=`expr $laspe_sec + 1`
+		echo "stop_findindex: stop failed, killing with SIGKILL ($laspe_sec)"
+		pid=`head -n 1 ${PID}`
+		kill -KILL $pid
+	done
+	rm -f ${PID}
+}
+
+case "$1" in
+	start)
+		start_findindex
+		;;
+	stop)
+		stop_findindex
+		;;
+	restart)
+		stop_findindex
+		start_findindex
+		;;
+	rmiregistry)
+		case "$2" in
+			start)
+				start_rmiregistry
+				;;
+			stop)
+				stop_rmiregistry
+				;;
+			restart)
+				stop_rmiregistry
+				start_rmiregistry
+				;;
+			*)
+				usage
+				exit 1
+				;;
+		esac
+		;;
+	help)
+		usage
+		;;
+	*)
+		usage
+		exit 1
+		;;
+esac

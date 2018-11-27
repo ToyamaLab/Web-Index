@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT WIX (header, body)>
+<!ELEMENT header (comment|description|language)+>
+<!ELEMENT comment (#PCDATA)>
+<!ELEMENT description (#PCDATA)>
+<!ELEMENT language (#PCDATA)>
+<!ELEMENT body (part|entry|child)*>
+<!ELEMENT child (#PCDATA)>
+<!ELEMENT part (part|entry)*>
+<!ATTLIST part 
+	name CDATA #REQUIRED
+>
+<!ELEMENT entry (keyword|target)+>
+<!ELEMENT keyword (#PCDATA)>
+<!ELEMENT target (#PCDATA)>

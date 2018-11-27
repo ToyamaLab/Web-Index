@@ -1,0 +1,88 @@
+version 0.1.0
+・初期バージョン
+
+version 0.1.1
+・Findインデックス構築時のステートメントを変更
+・ディレクトリ構成の変更
+・FinIndex構築時にスタブ生成不要に変更
+
+version 0.1.2
+・Redirector版作ってみた（統合は0.3.0でやります）
+
+version 0.2.0
+・ダーツ版FindIndex（ディレクトリ構成はtomcatプロジェクトでなくjavaプロジェクト）
+
+version 0.2.1
+・マルチバイト、1バイト文字でFind処理のロジックを変える
+（変えるタイミングは" ", "."など1バイト文字が区切られるであろうタイミング、ディレクトリ構成はtomcatプロジェクトでなくjavaプロジェクト）
+
+version 0.2.2
+・ver 0.2.1のバグフィックス？？（TODO：具体的に）
+・ver0.1.1でのディレクトリ構成をもとに戻す（分かりにくいため）
+・make.sh (findindex.sh) を元に戻す（debugがやりにくいため）
+
+version 0.2.3
+・ver 0.2.1のバグフィックス？？（TODO：具体的に）
+
+version 0.2.4
+・ver 0.2.1のバグフィックス？？（TODO：具体的に）
+
+version 0.3.0（noahにデプロイ）
+・Redirectorと統合し、ResultObjectからStringを排除
+・UI側から受け取るパタメータを変更（POSTで複数の値を取得するようにする）
+・index.html(結合テスト)を変更
+・PreFind処理においてタグの入れ子に対応
+
+version 0.3.1
+・WixPlus機能のみ
+・クリックログの取得（時間, loglevel, クラス(wixplusの場合はオリジナルのwid, eid), wid, eid）
+
+version 0.3.2
+・アタッチするキーワードの最短長指定機能追加
+
+version 0.3.3
+・ポップアップ表示に対応
+・リバプロ&キャッシュサーバとしてnginx（ver1.2.6）を適用
+・log4jのwarningを全消し
+
+version 0.3.5
+・mavenプロジェクトに変更
+・popup.jsにおけるポップアップ内でのリンク先をonClick=wixLinkに変更
+・findindex起動スクリプトの変更
+・wixdevでもnginx導入しといたよ
+・external file以下のディレクトリ構成を変更
+・CIサーバ'Jenkins'の導入
+・静的コード解析ツール'sonar'の導入
+・WIXToolbarのVersionCheck機能の追加
+
+version 0.4.0
+・findindex update版に変更
+
+version 0.4.1
+・findindex 可変長版 <- 一旦中断 ( 誰か(・∀・)ﾔｯﾃｸﾚﾙ!! )
+
+version 0.4.2（α版リリース）2013.11.2
+・log出力整理
+・servlet3.0に変更し、web.xmlでのurl指定から@WebServletによるurl指定に変更
+・コードリファクタリング
+ - url整理
+ - source整理
+
+version 0.5.0
+・object attach
+・wordtank
+・select, find時の重複チェック
+・環境変数追加
+・version毎で残るのがうざいのでartifact idのみでcontext deploy
+
+version 0.5.1
+・log出力安定版
+・pomを環境毎で分ける作戦
+
+version 0.5.2
+・aタグにイベントを記述しないようRewriteを変更
+・ポップアップ仕様変更によるRewriteの変更
+・Login時のレスポンスをJson形式に変更
+・USER-AGENTによるブラウザ判定をUADetectorを用いた形式に変更
+・同義語処理の導入
+・propertiesファイルの読み込み方法と記述の追加
