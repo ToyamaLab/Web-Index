@@ -1,0 +1,86 @@
+
+<!doctype html>
+<html>
+<head>
+	<title>Web IndeX Options</title>
+	<!--<script src="options.js"></script>-->
+	<link href="chrome-bootstrap.css" type="text/css" rel="stylesheet" />
+	<style>
+	li {
+		list-style: none;
+	}
+	label input[type="checkbox"] {
+		margin-top: -14px;
+	}
+	label img {
+		width: 24px;
+		margin: 0 9px 0;
+	}
+	label div {
+		margin-top: -5px;
+		display: inline-block;
+		line-height: 36px;
+		vertical-align: top;
+	}
+	.other-setting {
+		margin-top: 12px;
+		padding: 12px 0;
+	}
+	.other-setting div {
+		line-height: 12px;
+		margin-left: 4px;
+	}
+	.icon-trash {
+		background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAQAAACMnYaxAAAAXUlEQVR4XsWQQQrAQAgD84Pti/JSoaftN1MCdgXxXgYvGfUQyABE4DEIUJmeuKgVlJI5em0RGTesFXXZuLwCzvL2pYbHmfCTNSXxpyyajLGClFy7K1dgaaho7YYovIpO3rju6hYFAAAAAElFTkSuQmCC') 0 0 no-repeat;
+		width: 14px;
+    height: 16px;
+    margin: 0 0 0 12px;
+    opacity: 0.7;
+    display: inline-block;
+    vertical-align: middle;
+	}
+	</style>
+</head>
+<body class="frame">
+	<div class="navigation">
+		<h1><a href="#">Web IndeX</a></h1>
+		<ul class="menu">
+			<li class="selected">
+				<a href="options.html">WIX Library</a>
+				<a href="toolbar.html">Tool Bar</a>
+			</li>
+		</ul>
+	</div>
+
+	<div class="mainview view">
+		<div id="typography" class="selected">
+
+			<header>
+				<h1>WIX Library <small>upload</small></h1>
+			</header>
+			<div class="content wix_library">
+				<form id="wix_library_form" enctype="multipart/form-data">
+					<p>author : <input type="text" name="author" id="author" /></p>
+					<p>file : <input type="file" name="file" id="upfile"/></p>
+					<button type="button" id="save_wix_library">Upload</button>
+				</form>
+			</div>
+
+			<header>
+				<h1>WIX Library <small>edit</small></h1>
+			</header>
+			<div class="content wix_library">
+				<form id="wix_library_form" enctype="multipart/form-data">
+					<p>author : <input type="text" name="author" id="author" /></p>
+					<p>file : <input type="file" name="file" id="upfile"/></p>
+				</form>
+			</div>
+
+		</div>
+	</div>
+
+<script src="../scripts/jquery.min.js"></script>
+<script src="options.js"></script>
+<script src="../scripts/background.js"></script>
+</body>
+</html>
