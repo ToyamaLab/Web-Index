@@ -1,0 +1,115 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String body = request.getParameter("body");
+		String body_without_tags = body.replaceAll("<.+?>", "");
+
+		String[] keywords = {"12月","紅白歌合戦","5年ぶり","北島三郎","サザンオールスターズ","特別出演","歌唱者","紅組","白組","満","歌唱者","ヤフー","コメント欄","SNS","特別出演","サブちゃん","桑田佳祐","祭りのあと","…。","平成最後","サブちゃん","北島三郎","サザン","平成","北島三郎","サザンオールスターズ","サブちゃん","サザン","1年","いとしのエリー","勝手にシンドバッド","サザン","北島三郎","サザン","イントロ","得も言われぬ","若い人","サブちゃん","帰ろかな","あの鐘を鳴らすのはあなた","和田アキ子","サザン","歌唱者","サザン","サブちゃん","サザン","石黒","隆之","石黒","隆之","ipod"};
+
+		Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        PreparedStatement ps = null;
+
+        String url = "jdbc:postgresql://localhost:5432/wix";
+        String user = "wixadm";
+        String password = "";
+
+        try{
+            Class.forName("org.postgresql.Driver");
+
+            //PostgreSQLへ接続
+            conn = DriverManager.getConnection(url, user, password);
+
+            //自動コミットOFF
+            conn.setAutoCommit(false);
+            String sql = "SELECT m.wid, m.name, count(*) from wix_file_meta_info m, wix_file_entry e where m.wid = e.wid AND (e.keyword like ?";
+            int i;
+            for (i = 1; i < keywords.length; i++) {
+            		sql += " OR e.keyword like ?";
+            }
+            sql += ") GROUP BY m.wid ORDER BY count DESC";
+            ps = conn.prepareStatement(sql);
+            int j;
+            String key = "";
+            for (j = 0; j < keywords.length; j++) {
+            		key = keywords[j];
+            		ps.setString(j + 1, key);
+            }
+            Long queryStart = System.currentTimeMillis();
+            rset = ps.executeQuery();
+            Long queryEnd = System.currentTimeMillis();
+//            out.println(ps.toString()+ "<br>");
+            out.println(queryEnd - queryStart + " ms<br>");
+
+            //SELECT結果の受け取り
+            while(rset.next()){
+                String wid = rset.getString("wid");
+                String wixfileName = rset.getString("name");
+                String widCount = rset.getString("count");
+//                out.println(wid + " " + wixfileName + " -> " + widCount + "個<br>");
+                out.println("<button class=\"wix-attach\" wid=\"" + wid + "\">" + wixfileName + "</button>");
+            }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println(e);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            out.println(e);
+        }
+        finally {
+            try {
+                if(rset != null)rset.close();
+                if(stmt != null)stmt.close();
+                if(conn != null)conn.close();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+                out.println(e);
+            }
+        }
+
+		out.println("<button class=\"wix-attach\" wid=\"1\">Wikipedia-ja</button>");
+//		MeCab meCab = new MeCab(body);
+//		out.println(meCab.getBody());
+	}
+}

@@ -1,0 +1,46 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.data.MeCab;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String body = request.getParameter("body");
+		String body_without_tags = body.replaceAll("<.+?>", "");
+
+		out.println("<button class=\"wix-attach\" wid=\"1\">Wikipedia-ja</button>");
+		MeCab meCab = new MeCab(body);
+		out.println(meCab.getBody());
+
+		out.println(body_without_tags);
+
+	}
+}

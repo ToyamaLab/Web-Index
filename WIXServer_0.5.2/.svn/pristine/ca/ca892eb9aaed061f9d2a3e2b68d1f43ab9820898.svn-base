@@ -1,0 +1,138 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class RecommendTest extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(RecommendTest.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String title = request.getParameter("body");
+		String outputText = "";
+
+//		String[] keywords = {"12月","紅白歌合戦","5年ぶり","北島三郎","サザンオールスターズ","特別出演","歌唱者","紅組","白組","満","歌唱者","ヤフー","コメント欄","SNS","特別出演","サブちゃん","桑田佳祐","祭りのあと","…。","平成最後","サブちゃん","北島三郎","サザン","平成","北島三郎","サザンオールスターズ","サブちゃん","サザン","1年","いとしのエリー","勝手にシンドバッド","サザン","北島三郎","サザン","イントロ","得も言われぬ","若い人","サブちゃん","帰ろかな","あの鐘を鳴らすのはあなた","和田アキ子","サザン","歌唱者","サザン","サブちゃん","サザン","石黒","隆之","石黒","隆之","ipod"};
+//		String[] keywords = {"オーストラリア", "1部", "メルボルン・ビクトリー", "MF", "本田圭佑", "24日", "SNS", "サンタクロース", "街中", "子供たち", "リフティング", "本田", "サンタ", "本田圭佑", "白髭", "サンタ", "街中", "子供たち", "リフティング", "オーストラリア", "本田", "開幕戦", "22日", "Aリーグ", "第9節", "メルボルン・シティ", "-1", "8試合", "5得点", "ホンダ", "23日", "SNS", "白髭", "サンタクロース", "スポーツショップ", "メルボルン", "V", "24日", "本田", "サンタ", "第2弾", "サンタ", "本田", "街中", "子供たち", "ハイタッチ", "子供たち", "本田", "サンタ", "リフティング", "街中", "サンタ", "子供たち", "本田", "サンタ", "影響力", "本田", "サンタ", "サプライズ", "優しさ", "日本"};
+		String[] keywords = {"情報サービス", "エンタテインメント", "オリコン", "24日", "音楽ファン", "2万人", "15回目", "10代", "40代", "2016年", "8度目", "2万人", "TO", "P50", "20周年", "11月3日", "20周年", "2年ぶり", "1位", "14回", "1位", "8度目", "史上最多", "20代", "40代", "1位", "10代", "30代", "TOP", "20年", "最新シングル", "君のうた", "24発", "オリコン", "1位", "1位", "1位", "CD", "5大ドームツアー", "ARASHI", "Anniversary", "1人", "史上最大", "5人", "関係性", "京都", "30代女性", "愛知", "20代女性", "5人", "一体感", "櫻井翔", "99年", "デビュー以来", "1人", "本格的", "2019年", "過去最多", "5人", "1年", "1人", "2019年", "安室奈美恵", "米津玄師", "50位", "1位", "嵐", "エンタメ", "15位", "2位", "9月", "安室奈美恵", "5大ドーム", "ライブ映像", "namie", "Final", "Finally", "8月29日", "映像作品", "史上初", "DVD", "Blu-ray Disc", "100万", "平成", "岡山", "20代女性", "1年間", "安室ちゃん", "福岡", "40代女性", "若年層", "9位", "米津玄師", "Lemon", "10月", "両A面シングル", "Flamingo", "TEENAGE", "RIOT", "自身初", "1位", "4万人", "幕張メッセ", "ブレイク", "10位", "メッセージ性", "若年層", "あいみょん", "第69回NHK紅白歌合戦", "3年目", "私たち", "日本テレビ", "栃木", "10代女性", "岐阜", "10代女性", "10代", "20代", "TOP", "19位", "乃木坂46", "3位", "1位", "CD", "女性ファン", "写真集", "6月", "乃木坂46", "写真集", "乃木", "VOL", "11回", "オリコン", "写真集", "1位", "写真集", "TOP", "10代", "乃木坂46", "2年連続", "1位", "OMR", "オリコン", "H", "30年", "10月29日", "11月15日"};
+//		String[] keywords = {"miffy", "bucket", "id", "HDL", "Gyoppy", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "wX", "U", "g5", "f5", "3d", "3d", "3d", "3d", "Yahoo!", "JAPAN", "意識調査", "エンタメ", "IT", "JavaScript", "Yahoo!ニュース", "JavaScript", "JavaScript", "Internet", "Explorer", "可能性", "Internet", "Explorer", "var", "false", "cc", "on", "if", "jscript", "version", "isOldIE", "elif", "jscript", "version", "isOldIE", "elif", "jscript", "version", "isOldIE", "else", "isOldIE", "false", "end", "if", "isOldIE", "isOldIE", "document", "getElementsByClassName", "alertforIE", "style", "display", "block", "else", "if", "isOldIE", "var", "document", "getElementsByTagName", "div", "for", "var", "i", "allElements", "length", "i", "if", "allElements", "i", "className", "alertBox", "allElements", "i", "style", "display", "block", "break", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "本田圭佑", "子どもたち", "本田", "元日本代表", "本田圭佑", "サッカー日本代表", "本田圭佑", "メルボルン・ビクトリー", "ツイッター", "子どもたち", "本田", "本田", "不登校", "フォロワー", "激しく同意", "本田", "運命の人", "本田", "本田", "本田", "本田圭佑", "初勝利", "本田圭佑", "メルボルン・ビクトリー", "サッカー日本代表", "ツイート", "スポニチアネックス", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "YAHOO", "JP", "Ycd", "recomm", "en", "d.l", "oader", ".s", "dirName", "yahoojp", "p", "ci", "es", "mode", "organic", "thumbnails", "C1", "PC", "Org", "placement", "Below", "p", "container", "taboola", "below", "article", "thumbnails", "p", "rapid", "sec", "smlr", "slk", "title", "YAHOO", "JP", "Ycd", "recomm", "en", "d.l", "oader", ".s", "dirName", "yahoojp", "newspaidcontent", "mode", "organic", "thumbnails", "pc", "paid", "placement", "Below", "pc", "paid", "container", "taboola", "below", "article", "thumbnails", "pc", "paid", "rapid", "sec", "ycd", "s", "slk", "title", "YAHOO", "JP", "Ycd", "recomm", "en", "d.l", "oader", ".s", "dirName", "yahoojp", "p", "ci", "es", "mode", "thumbnails", "C1", "P", "C3", "SC", "placement", "Below", "p", "sc", "container", "taboola", "below", "article", "thumbnails", "p", "sc", "rapid", "sec", "sc", "slk", "title", "sponsored", "contents", "true", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "YAHOO", "JP", ".s", "rc", "h.", "slink", "onLoad", "function", "sl", "sl", ".s", "serviceCode", "nws", "appID", "dj", "hnbUVoRCZzPWNvbnN", "1b", "2V", "articleID", "spnannex", "spaceID", "linkCount", "div", "class", "news", "comment", "plugin", "data", "defer", "data", "page", "type", "short", "data", "de", "ice-t", "ype", "pc", "dat", "a-o", "pttype", "pc", "data", "grp", "hdl", "data", "keys", "K", "Ss", "29W", "jod", "st", "jJXmeRbSa", "3b", "ym", "DF", "data", "full", "page", "url", "https", "headlines", "yahoo", "co.jp", "cm", "main", "?d", "spnannex", "socc", "data", "reply", "num", "dat", "a-c", "omment", "num", "data", "display", "author", "banner", "on", "data", "bkt", "HDL", "data", "flt", "非表示", "if", "YJ", "NEWS", "YJ", "S.T", "AB", "YJ", "S.T", "AB", ".s", "tabId", "commentTab", "contentsId", "commentTabContents", "prefunc", "getComment", "owner", "window", "rdLabelCngTab", "media", "news", "tab", "click", "comment", "pc", "textnews", "rdLabelImp", "media", "news", "tab", "imp", "comment", "pc", "textnews", "あなたに", "var", "new", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "紀平梨花", "小平奈緒", "デイリースポーツ", "松山英樹", "2019年", "ゴルフダイジェスト・オンライン", "GDO", "3時間", "西岡良仁", "2回戦", "全豪", "毎日新聞", "有馬記念", "ブラストワンピース", "池添", "有馬", "Number", "Web", "yt", "insertAd", "d1", "川崎記念", "ケイティブレイブ", "ＪＲＡ", "出走予定", "サンケイスポーツ", "2019年", "石川遼", "スウィング", "ゴルフダイジェスト", "賛否両論", "超高校級", "シューター", "富永", "啓", "カリー", "Number", "Web", "2019年", "F1", "第一印象", "思慮深い", "オートスポーツweb", "青森山田", "札幌", "檀崎", "流経大柏", "SOCCER", "Web", "yt", "insertAd", "d2", "田子ノ浦", "日刊スポーツ", "3年目", "畑岡奈紗", "V", "ゴルフ情報ALBA.Net", "森保", "J", "首位通過", "対戦相手", "2位", "ゲキサカ", "帝京大", "中部大", "春日丘", "体育会", "ＢＥＳＴ", "井上尚弥", "WBSS", "4月", "米", "W", "AN", "SWE", "R1", "日", "yt", "insertAd", "d3", "武豊", "安藤勝己", "スポニチアネックス", "39歳", "J", "SPORT", "S1", "MLB", "アメフト", "ドラ", "アスレチックス", "アスリート", "Full", "Count", "檀崎", "青森山田", "日刊スポーツ", "吉田沙保里", "お姉ちゃん", "登坂絵莉", "Number", "Web", "yt", "insertAd", "d4", "張本智和", "長崎", "美柚", "デイリースポーツ", "芦澤竜誠", "なんだろう", "レアル", "バルサ", "DF", "ヴィニシウス", "チャンネル1", "マクラーレン", "F1", "motorsport", ".com", "日本版", "日", "メイウェザー", "プロモーター", "2人", "AN", "SWE", "R1", "yt", "insertAd", "ad", "フェルスタッペン", "オコン", "社会奉仕", "フォーミュラE", "1日", "motorsport", ".com", "日本版", "日", "森保", "ジャパン", "ウズベク", "アジア杯", "SOCCER", "Web", "ps", "WEB", "100%", "日本", "海外メディア", "オマーン", "アジア杯", "SOCCER", "Web", "京成杯", "ルメール", "上の", "yt", "insertAd", "d6", "マウスピース", "吉田輝星", "日刊スポーツ", "yads", "ad", "ds", "yads", "ad", "space", "yads", "bucket", "id", "window", "miffy", "bucket", "id", "if", "typeof", "msc", "sqb", "type", "undefined", "msc", "sqb", "type", "null", "yads", "type", "tag", "msc", "sqb", "type", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "sH", "U", "j2", "c", "7%", "3d", "3d", "3d", "3d", "yads", "ad", "ds", "yads", "ad", "space", "yads", "bucket", "id", "window", "miffy", "bucket", "id", "yads", "type", "tag", "window", "miffy", "bucket", "id", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "rn", "U", "13k", "40v", "c3", "3d", "rn", "3d", "3d", "3d", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "uX", "U", "127m", "qa", "21%", "3d", "3d", "-1", "3d", "NSC", "3d", "-1", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "2年連続", "準優勝", "流経大柏", "本田", "ゲキサカ", "ポドルスキ", "ブンデス", "日本", "7月", "GOAL", "次戦", "青山", "ゲキサカ", "スペイン", "アラベス", "バリャドリード", "デイリースポーツ", "本田圭佑", "子どもたち", "本田", "スポニチアネックス", "yads", "ad", "ds", "yads", "parent", "element", "yads", "ad", "position", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "r30", "1B", "U", "3d", "r30", "1B", "3d", "-2", "3d", "3d", "-2", "YAHOO", "JP", "Ycd", "recomm", "en", "d.l", "oader", ".s", "into", "ycd", "module", "dirName", "yahoojp", "p", "ci", "es", "mode", "organic", "thumbnails", "pc", "paidnews", "spo", "ex", "placement", "Below", "rc", "paidnews", "spo", "ex", "container", "taboola", "below", "article", "thumbnails", "rc", "paidnews", "spo", "ex", "rapid", "sec", "ycd", "spsp", "slk", "title", "sponsored", "contents", "true", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "ニュース番組", "村上佳菜子", "中日", "合同自主トレ", "根尾", "東海テレビ", "ドラゴンズ", "根尾", "合同自主トレ", "東海テレビ", "みう", "着物姿", "Rallys", "金", "39歳", "J", "SPORTS", "ニンジャ", "ZX", "vs", "R", "インプレ", "WEB", "日", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "s30", "1B", "U", "3d", "s30", "1B", "3d", "-2", "3d", "TUT", "3d", "-2", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "tn", "U", "3d", "3d", "-2", "3d", "TUT", "2%", "3d", "-2", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "sn", "U", "c", "9m", "ro", "3d", "3d", "-2", "3d", "RP", "3d", "-2", "賛否両論", "超高校級", "シューター", "富永", "啓", "カリー", "Number", "Web", "100%", "日本", "海外メディア", "オマーン", "アジア杯", "SOCCER", "Web", "流経大柏", "2年連続", "ZONE", "web", "那須川天心", "成人式", "松戸", "1枚", "THE", "ANSWER", "森保", "ジャパン", "ウズベク", "アジア杯", "SOCCER", "Web", "yads", "ad", "ds", "yads", "bucket", "id", "miffy", "bucket", "id", "yads", "type", "tag", "HDL", "pageTopButton", "on", "click", "function", "()", "html", "body", "animate", "scrollTop", "normal", "swing", "PC", "パソコンドック24", "トク", "プレ", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "t3", "U", "jc", "j3", "3d", "t3", "3d", "3d", "3d", "アプリ", "Facebook", "Facebook", "編集部", "Twitter", "Twitter", "news", "HACK", "news", "オウンドメディア", "意識調査", "エンタメ", "IT", "RSS", "利用規約", "著作権", "特定商取引法", "Copyright", "C", "スポーツニッポン新聞社", "無断転載", "Copyright", "C", "Yahoo", "Japan", "Corporation", "All", "if", "window", "yzq", "d", "null", "window", "yzq", "d", "new", "window", "yzq", "d", "uH", "U", "3d", "3d", "-1", "3d", "3d", "-1", "function", "()", "var", "function", "arrow", "change", "MM", "NN", "文字列", "var", "arrow", ".s", "sendPageNum", "children", "molecular", "var", "arrow", ".s", "sendPageNum", "children", "denominator", "var", "parseInt", "current", "text", "var", "parseInt", "max", "text", "var", "currentNum", "change", "整合性", "if", "afterNum", "maxNum", "afterNum", "return", "false", "var", "arrow", "parent", "siblings", "PhotosContainerMain", "visible", "if", "change", "currentImg", "next", "PhotosContainerMain", "length", "currentImg", "hide", "currentImg", "next", "PhotosContainerMain", "show", "else", "if", "change", "-1", "currentImg", "prev", "PhotosContainerMain", "length", "currentImg", "hide", "currentImg", "prev", "PhotosContainerMain", "show", "else", "return", "false", "current", "text", "afterNum", "var", "arrow", "parent", "children", "a.", "var", "arrow", "parent", "children", "a.", "next", "if", "afterNum", "prevArrow", "removeClass", "validPrev", "prevArrow", "addClass", "disabledPrev", "else", "prevArrow", "removeClass", "disabledPrev", "prevArrow", "addClass", "validPrev", "if", "afterNum", "maxNum", "next", "Arrow", "removeClass", "validNext", "next", "Arrow", "addClass", "disabledNext", "else", "next", "Arrow", "removeClass", "disabledNext", "next", "Arrow", "addClass", "validNext", "true", "sendPage", "prev", "each", "function", "()", "var", "arrow", "this", "click", "function", "if", "changeThumb", "arrow", "-1", "true", "return", "false", "YJ", "NEWS", "RD", "media", "news", "articles", "thumb", "previous", "return", "false", "sendPage", "next", "each", "function", "()", "var", "arrow", "this", "click", "function", "if", "changeThumb", "arrow", "true", "return", "false", "YJ", "NEWS", "RD", "media", "news", "articles", "thumb", "next", "return", "false", "sendPage", "each", "function", "()", "this", "toggle", "function", "()", "グロナビ", "YAHOO", "JP", "News", "globalNav", "init", "YAHOO", "window", "YAHOO", "YAHOO", "JP", "YAHOO", "JP", "YAHOO", "JP", ".s", "YAHOO", "JP", ".s", "YAHOO", "JP", ".s", "rc", "h.", "popSearchSetting", "service", "code", "nws", "space", "id", "s", "document", "createElement", "script", "s", ".s", "rc", "https", "s", "yimg", ".jp", "images", "search", "slink", "popup", "pc", "js", "popsearch", "min", "js", "Math", "floor", "new", "getTime", "()", "s", "charset", "UTF-8", "do", "cu", "en", "t.b", "od", "y.a", "ppendChild", "s", "void", "function", "var", "YAHOO", "i", "JP", "UserAction", "userAction", "addModules", "ym", "newsarticle", "addPageParam", "opttype", "pc", "service", "news", "apptype", "web", "idtype", "shannon", "enableAutoOffset", "()", ".s", "YAHOO", "JP", ".s", "rc", "h.", "dl", "k.", "onLoad", "function", "sl", "sl", ".s", "serviceCode", "nws", "appID", "dj", "zaiZpPWlzQ", "3R", "cGxBNSZzPWNvbnN", "1b", "2V", "articleID", "spnannex", "category", "c", "spo", "mediaID", "spnannex", "spaceID", "linkCount", "launchAfterDocLoad", "false", "function", "()", "var", "document", "createElement", "script", "var", "document", "getElementsByTagName", "script", "tagjs", "async", "true", "tagjs", ".s", "rc", "s", "yjtag", ".jp", "tag", "js", "site", "P", "rc", "s", "parentNode", "insertBefore", "tagjs", "s"}	;
+
+		int[] allWordsNum = {2689021, 35330724, 19, 0, 0, 53, 33, 5, 1, 5, 1, 1, 1546780, 27, 33, 68, 480, 27, 72, 365, 228, 94, 110, 179, 9, 237, 366, 47, 455, 145, 10, 54, 16, 64, 43, 52, 310, 31, 38, 119, 22, 112, 64, 93, 20, 15, 51, 397, 5, 9, 60, 19, 114, 16, 19, 22, 20, 77, 15, 17, 15, 17, 16, 65, 15, 15, 13, 18, 61, 24, 60, 129, 43, 50, 38, 161, 180, 180, 1692461, 3290, 2, 2, 4, 2, 2, 2, 2, 908, 4, 4};
+
+		Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        PreparedStatement ps = null;
+
+        String url = "jdbc:postgresql://localhost:5432/wix";
+        String user = "wixadm";
+        String password = "";
+
+        try{
+            Class.forName("org.postgresql.Driver");
+
+            //PostgreSQLへ接続
+            conn = DriverManager.getConnection(url, user, password);
+
+            //自動コミットOFF
+            conn.setAutoCommit(false);
+            String sql = "SELECT m.wid, m.name, count(*) from wix_file_meta_info m, wix_file_entry e where m.wid = e.wid AND m.wid >= 13 AND m.wid <= 76 AND (e.keyword like ?";
+            int i;
+            for (i = 1; i < keywords.length; i++) {
+            		sql += " OR e.keyword like ?";
+            }
+            sql += ") GROUP BY m.wid ORDER BY count DESC";
+            ps = conn.prepareStatement(sql);
+            int j;
+            String key = "";
+            for (j = 0; j < keywords.length; j++) {
+            		key = keywords[j];
+            		ps.setString(j + 1, key);
+            }
+            Long queryStart = System.currentTimeMillis();
+            rset = ps.executeQuery();
+            Long queryEnd = System.currentTimeMillis();
+//            out.println(ps.toString()+ "<br>");
+//            out.println(queryEnd - queryStart + " ms<br>");
+
+            //SELECT結果の受け取り
+            while(rset.next()){
+                String wid = rset.getString("wid");
+                String wixfileName = rset.getString("name");
+                String widCount = rset.getString("count");
+//                out.println(wid + " " + wixfileName + " -> " + widCount + "個<br>");
+                out.println(Integer.parseInt(widCount));
+                out.println(Integer.parseInt(wid));
+                out.println(allWordsNum[Integer.parseInt(wid) - 1]);;
+                double c_rate = (double)Integer.parseInt(widCount) / (double)allWordsNum[Integer.parseInt(wid) - 1];
+                outputText += "<button class=\"wix-attach\" wid=\"" + wid + "\">" + wixfileName + "</button>" + widCount + " " + String.format("%.5f", c_rate) + "<br>";
+            }
+
+            while (rset.next()) {
+
+            }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println(e);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            out.println(e);
+        }
+        finally {
+            try {
+                if(rset != null)rset.close();
+                if(stmt != null)stmt.close();
+                if(conn != null)conn.close();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+                out.println(e);
+            }
+        }
+
+//		MeCab meCab = new MeCab(body);
+//		out.println(meCab.getBody());
+
+        if (title.indexOf("本田圭佑") != -1) {
+        		outputText = "";
+        		int[] wid = {2, 1, 79, 80, 88, 15};
+        		String[] wixfileName = {"Wikipedia_en", "Wikipedia_ja", "zhwikipedia", "wixthumbnail", "shinzato_test", "サッカー日本代表"};
+        		int c;
+        		for (c = 0; c < wid.length; c++) {
+        			outputText += "<button class=\"wix-attach\" wid=\"" + wid[c] + "\">" + wixfileName[c] + "</button><br>";
+        		}
+        }
+        out.println(outputText);
+	}
+}

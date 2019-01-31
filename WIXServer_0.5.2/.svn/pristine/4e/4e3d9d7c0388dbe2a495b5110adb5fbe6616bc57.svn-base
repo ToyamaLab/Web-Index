@@ -1,0 +1,115 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String body = request.getParameter("body");
+		String body_without_tags = body.replaceAll("<.+?>", "");
+
+		//String[] keywords = {"12月","紅白歌合戦","5年ぶり","北島三郎","サザンオールスターズ","特別出演","歌唱者","紅組","白組","満","歌唱者","ヤフー","コメント欄","SNS","特別出演","サブちゃん","桑田佳祐","祭りのあと","…。","平成最後","サブちゃん","北島三郎","サザン","平成","北島三郎","サザンオールスターズ","サブちゃん","サザン","1年","いとしのエリー","勝手にシンドバッド","サザン","北島三郎","サザン","イントロ","得も言われぬ","若い人","サブちゃん","帰ろかな","あの鐘を鳴らすのはあなた","和田アキ子","サザン","歌唱者","サザン","サブちゃん","サザン","石黒","隆之","石黒","隆之","ipod"};
+		String[] keywords = {"ありません", "貴ノ岩", "日本大", "悪質タックル", "宮川", "泰介", "内田正人", "大学側", "日本レスリング協会", "日本体操協会", "パワハラ", "日本ボクシング連盟", "助成金", "東京五輪", "大谷", "翔平", "米", "大リーグ", "2割", "8分", "22本", "4勝", "2敗", "防御率", "アメリカン・リーグ", "新人王", "日本選手", "野茂英雄", "佐々木主浩", "イチロー", "マリナーズ", "4人", "光栄", "吉田輝星", "金足", "秋田", "夏の甲子園", "準優勝", "150キロ", "秋田大会", "甲子園", "プロ野球", "日本ハム", "ドラフト1位", "根尾昂", "大阪桐蔭", "甲子園", "春夏連覇", "プロ野球", "中日", "西野", "朗", "サッカー日本代表", "バヒド・ハリルホジッチ", "W杯", "ロシア大会", "4月", "グループリーグ", "7月", "21歳", "U2", "日本代表", "森保一", "本田", "圭佑", "W杯", "ロシア大会", "グループリーグ", "第1戦", "決勝ゴール", "第2戦", "同点ゴール", "決勝トーナメント進出", "カンボジア代表", "大迫", "勇也", "W杯", "ロシア大会", "FW", "大迫", "流行語", "設楽悠太", "2月", "東京マラソン", "2時間", "6分", "11秒", "高岡寿成", "日本記録", "16年ぶり", "1億円", "贈呈式", "おいしいごはん", "大迫", "傑", "10月", "米", "シカゴ", "2時間", "5分", "50秒", "3位", "設楽", "1億円", "10万", "1100万円", "池江", "璃花子", "高校3年", "8月", "ジャカルタ", "アジア競技大会", "6冠", "最優秀選手", "MVP", "有言実行", "大坂なおみ", "全米オープン", "女子シングルス", "9月", "日本選手", "世界ランキング", "1位", "セリーナ・ウィリアムズ", "米"};
+
+		Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        PreparedStatement ps = null;
+
+        String url = "jdbc:postgresql://localhost:5432/wix";
+        String user = "wixadm";
+        String password = "";
+
+        try{
+            Class.forName("org.postgresql.Driver");
+
+            //PostgreSQLへ接続
+            conn = DriverManager.getConnection(url, user, password);
+
+            //自動コミットOFF
+            conn.setAutoCommit(false);
+            String sql = "SELECT m.wid, m.name, count(*) from wix_file_meta_info m, wix_file_entry e where m.wid = e.wid AND m.wid != 13 AND (e.keyword like ?";
+            int i;
+            for (i = 1; i < keywords.length; i++) {
+            		sql += " OR e.keyword like ?";
+            }
+            sql += ") GROUP BY m.wid ORDER BY count DESC";
+            ps = conn.prepareStatement(sql);
+            int j;
+            String key = "";
+            for (j = 0; j < keywords.length; j++) {
+            		key = keywords[j];
+            		ps.setString(j + 1, key);
+            }
+            Long queryStart = System.currentTimeMillis();
+            rset = ps.executeQuery();
+            Long queryEnd = System.currentTimeMillis();
+//            out.println(ps.toString()+ "<br>");
+            out.println(queryEnd - queryStart + " ms<br>");
+
+            //SELECT結果の受け取り
+            while(rset.next()){
+                String wid = rset.getString("wid");
+                String wixfileName = rset.getString("name");
+                String widCount = rset.getString("count");
+//                out.println(wid + " " + wixfileName + " -> " + widCount + "個<br>");
+                out.println("<button class=\"wix-attach\" wid=\"" + wid + "\">" + wixfileName + "</button>");
+            }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println(e);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            out.println(e);
+        }
+        finally {
+            try {
+                if(rset != null)rset.close();
+                if(stmt != null)stmt.close();
+                if(conn != null)conn.close();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+                out.println(e);
+            }
+        }
+
+//		MeCab meCab = new MeCab(body);
+//		out.println(meCab.getBody());
+	}
+}

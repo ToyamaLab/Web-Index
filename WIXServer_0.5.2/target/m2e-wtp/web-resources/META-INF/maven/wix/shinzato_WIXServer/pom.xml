@@ -162,5 +162,15 @@
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.6.1</version>
 		</dependency>
+<!-- 		<dependency>
+		    <groupId>org.chasen.mecab</groupId>
+		    <artifactId>mecab-java</artifactId>
+		    <version>0.993</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.codelibs</groupId>
+			<artifactId>elasticsearch-analysis-kuromoji-neologd</artifactId>
+			<version>1.6.0</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,0 +1,115 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String title = request.getParameter("body");
+
+		//String[] keywords = {"12月","紅白歌合戦","5年ぶり","北島三郎","サザンオールスターズ","特別出演","歌唱者","紅組","白組","満","歌唱者","ヤフー","コメント欄","SNS","特別出演","サブちゃん","桑田佳祐","祭りのあと","…。","平成最後","サブちゃん","北島三郎","サザン","平成","北島三郎","サザンオールスターズ","サブちゃん","サザン","1年","いとしのエリー","勝手にシンドバッド","サザン","北島三郎","サザン","イントロ","得も言われぬ","若い人","サブちゃん","帰ろかな","あの鐘を鳴らすのはあなた","和田アキ子","サザン","歌唱者","サザン","サブちゃん","サザン","石黒","隆之","石黒","隆之","ipod"};
+		//String[] keywords = {"オーストラリア", "1部", "メルボルン・ビクトリー", "MF", "本田圭佑", "24日", "SNS", "サンタクロース", "街中", "子供たち", "リフティング", "本田", "サンタ", "本田圭佑", "白髭", "サンタ", "街中", "子供たち", "リフティング", "オーストラリア", "本田", "開幕戦", "22日", "Aリーグ", "第9節", "メルボルン・シティ", "-1", "8試合", "5得点", "ホンダ", "23日", "SNS", "白髭", "サンタクロース", "スポーツショップ", "メルボルン", "V", "24日", "本田", "サンタ", "第2弾", "サンタ", "本田", "街中", "子供たち", "ハイタッチ", "子供たち", "本田", "サンタ", "リフティング", "街中", "サンタ", "子供たち", "本田", "サンタ", "影響力", "本田", "サンタ", "サプライズ", "優しさ", "日本"};
+		String[] keywords = {"情報サービス", "エンタテインメント", "オリコン", "24日", "音楽ファン", "2万人", "15回目", "10代", "40代", "2016年", "8度目", "2万人", "TO", "P50", "20周年", "11月3日", "20周年", "2年ぶり", "1位", "14回", "1位", "8度目", "史上最多", "20代", "40代", "1位", "10代", "30代", "TOP", "20年", "最新シングル", "君のうた", "24発", "オリコン", "1位", "1位", "1位", "CD", "5大ドームツアー", "ARASHI", "Anniversary", "1人", "史上最大", "5人", "関係性", "京都", "30代女性", "愛知", "20代女性", "5人", "一体感", "櫻井翔", "99年", "デビュー以来", "1人", "本格的", "2019年", "過去最多", "5人", "1年", "1人", "2019年", "安室奈美恵", "米津玄師", "50位", "1位", "嵐", "エンタメ", "15位", "2位", "9月", "安室奈美恵", "5大ドーム", "ライブ映像", "namie", "Final", "Finally", "8月29日", "映像作品", "史上初", "DVD", "Blu-ray Disc", "100万", "平成", "岡山", "20代女性", "1年間", "安室ちゃん", "福岡", "40代女性", "若年層", "9位", "米津玄師", "Lemon", "10月", "両A面シングル", "Flamingo", "TEENAGE", "RIOT", "自身初", "1位", "4万人", "幕張メッセ", "ブレイク", "10位", "メッセージ性", "若年層", "あいみょん", "第69回NHK紅白歌合戦", "3年目", "私たち", "日本テレビ", "栃木", "10代女性", "岐阜", "10代女性", "10代", "20代", "TOP", "19位", "乃木坂46", "3位", "1位", "CD", "女性ファン", "写真集", "6月", "乃木坂46", "写真集", "乃木", "VOL", "11回", "オリコン", "写真集", "1位", "写真集", "TOP", "10代", "乃木坂46", "2年連続", "1位", "OMR", "オリコン", "H", "30年", "10月29日", "11月15日"};
+
+		Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        PreparedStatement ps = null;
+
+        String url = "jdbc:postgresql://localhost:5432/wix";
+        String user = "wixadm";
+        String password = "";
+
+        try{
+            Class.forName("org.postgresql.Driver");
+
+            //PostgreSQLへ接続
+            conn = DriverManager.getConnection(url, user, password);
+
+            //自動コミットOFF
+            conn.setAutoCommit(false);
+            String sql = "SELECT m.wid, m.name, count(*) from wix_file_meta_info m, wix_file_entry e where m.wid = e.wid AND m.wid != 13 AND (e.keyword like ?";
+            int i;
+            for (i = 1; i < keywords.length; i++) {
+            		sql += " OR e.keyword like ?";
+            }
+            sql += ") GROUP BY m.wid ORDER BY count DESC";
+            ps = conn.prepareStatement(sql);
+            int j;
+            String key = "";
+            for (j = 0; j < keywords.length; j++) {
+            		key = keywords[j];
+            		ps.setString(j + 1, key);
+            }
+            Long queryStart = System.currentTimeMillis();
+            rset = ps.executeQuery();
+            Long queryEnd = System.currentTimeMillis();
+//            out.println(ps.toString()+ "<br>");
+//            out.println(queryEnd - queryStart + " ms<br>");
+
+            //SELECT結果の受け取り
+            while(rset.next()){
+                String wid = rset.getString("wid");
+                String wixfileName = rset.getString("name");
+                String widCount = rset.getString("count");
+//                out.println(wid + " " + wixfileName + " -> " + widCount + "個<br>");
+                out.println("<button class=\"wix-attach\" wid=\"" + wid + "\">" + wixfileName + "</button><br>");
+            }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println(e);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            out.println(e);
+        }
+        finally {
+            try {
+                if(rset != null)rset.close();
+                if(stmt != null)stmt.close();
+                if(conn != null)conn.close();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+                out.println(e);
+            }
+        }
+
+//		MeCab meCab = new MeCab(body);
+//		out.println(meCab.getBody());
+	}
+}

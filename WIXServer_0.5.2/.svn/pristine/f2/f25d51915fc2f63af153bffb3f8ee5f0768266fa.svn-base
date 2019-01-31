@@ -1,0 +1,63 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+//import core.data.Constant;
+
+//import org.chasen.mecab.MeCab;
+//import org.chasen.mecab.Node;
+//import org.chasen.mecab.Tagger;
+
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+//		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String body = request.getParameter("body");
+		String body_without_tags = body.replaceAll("<.+?>", "");
+
+		out.println(body.length());
+		out.println(body_without_tags);
+//		try {
+//			System.loadLibrary("MeCab");
+//		} catch (UnsatisfiedLinkError e) {
+//			System.err.println("Cannot load the example native code.\nMake sure your LD_LIBRARY_PATH contains \'.\'\n" + e);
+//		    System.exit(1);
+//		}
+//
+//		out.println(MeCab.VERSION);
+//	     Tagger tagger = new Tagger();
+//	     String str = "太郎は二郎にこの本を渡した。";
+//	     out.println(tagger.parse(str));
+//	     Node node = tagger.parseToNode(str);
+//	     for (;node != null; node = node.getNext()) {
+//	    	 	out.println(node.getSurface() + "\t" + node.getFeature());
+//	     }
+//	     out.println ("EOS\n");
+
+	}
+}

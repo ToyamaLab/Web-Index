@@ -1,0 +1,101 @@
+package core.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import core.data.Constant;
+import core.data.MeCab;
+import core.util.LogUtil;
+
+/**
+ * recommend
+ * @author shinzato
+ */
+@WebServlet(name = "recommend", urlPatterns = "/recommend")
+public class Recommend extends HttpServlet{
+
+	/** デフォルトシリアルバージョンID */
+	private static final long serialVersionUID = 1L;
+
+	// singleton pattern
+	private static LogUtil logger;
+
+	public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+		logger = new LogUtil(Recommend.class);
+		response.setContentType("text/html; charset=UTF-8");
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		request.setCharacterEncoding(Constant.ENCODING.getString());
+		PrintWriter out = response.getWriter();
+
+		String body = request.getParameter("body");
+		String body_without_tags = body.replaceAll("<.+?>", "");
+
+		Connection conn = null;
+        Statement stmt = null;
+        ResultSet rset = null;
+        PreparedStatement ps = null;
+
+        String url = "jdbc:postgresql://localhost:5432/wix";
+        String user = "wixadm";
+        String password = "";
+
+        try{
+            Class.forName("org.postgresql.Driver");
+
+            //PostgreSQLへ接続
+            conn = DriverManager.getConnection(url, user, password);
+
+            //自動コミットOFF
+            conn.setAutoCommit(false);
+
+            ps = conn.prepareStatement("select wid, keyword, target from wix_file_entry where wid=?");
+            ps.setString(1, "1");
+            rset = ps.executeQuery();
+            //SELECT文の実行
+//            stmt = conn.createStatement();
+//            String sql = "SELECT wid FROM wix_file_meta_info";
+//            rset = stmt.executeQuery(sql);
+
+            //SELECT結果の受け取り
+            while(rset.next()){
+                String col = rset.getString("wid");
+                out.println(col);
+            }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            out.println(e);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            out.println(e);
+        }
+        finally {
+            try {
+                if(rset != null)rset.close();
+                if(stmt != null)stmt.close();
+                if(conn != null)conn.close();
+            }
+            catch (SQLException e){
+                e.printStackTrace();
+                out.println(e);
+            }
+        }
+
+		out.println("<button class=\"wix-attach\" wid=\"1\">Wikipedia-ja</button>");
+		MeCab meCab = new MeCab(body);
+		out.println(meCab.getBody());
+	}
+}
